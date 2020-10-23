@@ -34,7 +34,7 @@ def path_callback(data):
 	if (_map[_map.shape[0] - index_y][index_x] == 1):
 		_map[_map.shape[0] - index_y][index_x] = 2
 	
-		rospy.loginfo("Another part mowed ... percentage total aspirated.... %s ", 100*float(np.count_nonzero(_map == 2))/np.count_nonzero(_map == 1) )
+		rospy.loginfo("Another part aspirated ... percentage total aspirated.... %s ", 100*float(np.count_nonzero(_map == 2))/(np.count_nonzero(_map == 1) + np.count_nonzero(_map == 2)) )
 		rospy.loginfo("Discrete Map")
 		rospy.loginfo("%s", str(_map))
 	
