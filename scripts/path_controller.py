@@ -1,5 +1,5 @@
-#! /usr/bin/env python
-import rospy 
+#! /usr/bin/env python3
+import rospy
 from geometry_msgs.msg import *
 from sensor_msgs.msg import *
 from nav_msgs.msg import *
@@ -9,14 +9,12 @@ from gazebo_msgs.msg import *
 import numpy as np
 import csv
 import rospkg
-import matplotlib.pyplot as plt
-from matplotlib import cm
 import time
 
 laser = LaserScan()
 pose = Pose()
 rospack = rospkg.RosPack()
-_map = np.array(list(csv.reader(open(rospack.get_path('path_controller')+"/scripts/"+"map.csv", "rb"), delimiter=" "))).astype("int")
+_map = np.array(list(csv.reader(open(rospack.get_path('path_controller')+"/scripts/"+"map.csv", "r"), delimiter=" "))).astype("int")
 map_resolution = 4
 
 def path_callback(data):
@@ -33,23 +31,23 @@ def path_callback(data):
 
 	if (_map[_map.shape[0] - index_y][index_x] == 1):
 		_map[_map.shape[0] - index_y][index_x] = 2
-	
+
 		rospy.loginfo("Another part aspirated ... percentage total aspirated.... %s ", 100*float(np.count_nonzero(_map == 2))/(np.count_nonzero(_map == 1) + np.count_nonzero(_map == 2)) )
 		rospy.loginfo("Discrete Map")
 		rospy.loginfo("%s", str(_map))
-	
+
 def laser_callback(data):
 	global laser
 	laser = data
 
-if __name__ == "__main__": 
-	rospy.init_node("path_controller_node", anonymous=False)  
+if __name__ == "__main__":
+	rospy.init_node("path_controller_node", anonymous=False)
 
 	rospy.Subscriber("/gazebo/model_states", ModelStates, path_callback)
 
 	rospy.Subscriber("/scan", LaserScan, laser_callback)
 
-	pub = rospy.Publisher('/cmd_vel', Twist, queue_size=10)    
+	pub = rospy.Publisher('/cmd_vel', Twist, queue_size=10)
 	r = rospy.Rate(5) # 10hz
 	velocity = Twist()
 	while not rospy.is_shutdown():
@@ -61,12 +59,12 @@ if __name__ == "__main__":
 			else:
 				velocity.linear.x = 0.0
 				velocity.angular.z = 0.25
-			
+
 			pub.publish(velocity)
-				
+
 		r.sleep()
 
-# DISCRETE MAP 		
+# DISCRETE MAP
 # 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0
 # 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0
 # 0 1 1 1 1 1 1 1 0 1 1 1 1 1 1 1 1 1 1 0
@@ -87,5 +85,3 @@ if __name__ == "__main__":
 # 0 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 0 1 1 0
 # 0 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 0 1 1 0
 # 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0
- 
- 
